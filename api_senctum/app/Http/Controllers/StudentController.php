@@ -6,25 +6,25 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 class StudentController extends Controller
 {
-    function index(){
-        return Student::all();
+    public function index(){
+        return Student::all(); 
     }
-    function get_student(Request $request, $id){
+    public function get_student(Request $request, $id){
         return Student::find($id);
     }
-    function student_save(Request $request){
+    public function student_save(Request $request){
         $request->validate([
             'name'=> 'required',
             'city' => 'required',
             'fees' => 'required',
         ]);
-        $student =  Student::create($request->all());
+        $student = Student::create($request->only(['name', 'city', 'fees']));
         return response()->json([
             'message' => 'Student created successfully!',
             'data'    => $student
         ], 201);
     }
-    function update_student(Request $request, $id){
+    public function update_student(Request $request, $id){
         $request->validate([
             'name'=> 'required',
             'city' => 'required',
@@ -47,7 +47,7 @@ class StudentController extends Controller
             'data' => $student,
         ]);
     }
-    function delete_student(Request $request, $id){
+    public function delete_student(Request $request, $id){
         $student = Student::find($id);
         if (!$student){
             return response()->json([
@@ -55,10 +55,20 @@ class StudentController extends Controller
             ], 404);
         }
         $student->delete();
-        return response()->json([
+        return response()->json([                                                                             
             'message' => 'Student Deleted Successfully',
             'data' => $student,
         ], 200);
     }
+
+    public function search(Request $request, $city){
+        return Student::where('city', $city)->get();
+    }
+
+    // {
+    //     "name": "Sonu",
+    //     "city": "Karera",
+    //     "fees": 800
+    //   }
 
 }
